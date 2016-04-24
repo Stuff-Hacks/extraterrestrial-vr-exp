@@ -50,7 +50,7 @@ var scene = new THREE.Scene();
 var heights;
 scene.add(new THREE.AmbientLight(0xeeeeee));
     var camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-    camera.position.set(0, -30, 30);
+    camera.position.set(0, 0, 30);
     var renderer = new THREE.WebGLRenderer();
     renderer.setSize(width, height);
     //var terrainLoader = new THREE.TerrainLoader();
@@ -63,7 +63,7 @@ scene.add(new THREE.AmbientLight(0xeeeeee));
         var geometry = new THREE.PlaneGeometry(200, 200, 511, 511);
         //console.log(geometry.vertices.length);
 		for (var i = 0, l = geometry.vertices.length; i < l; i++) {
-            geometry.vertices[i].z = data[i] / 255.0 * 5;
+            geometry.vertices[i].z = data[i] / 255.0 * 10;
         }
 		var loader = new THREE.TextureLoader();
 
@@ -73,17 +73,38 @@ scene.add(new THREE.AmbientLight(0xeeeeee));
         var plane = new THREE.Mesh(geometry, material);
         scene.add(plane);
     });
-    var controls = new THREE.TrackballControls(camera); 
+    //var controls = new THREE.TrackballControls(camera); 
     document.getElementById('webgl').appendChild(renderer.domElement);
 
+// WASD-style movement controls
+var controls = new THREE.FlyControls(camera);
 
-    render();
-    function render() {
-        controls.update();    
+// Disable automatic forward movement
+controls.autoForward = false;
+
+// Click and drag to look around with the mouse
+controls.dragToLook = true;
+
+// Movement and roll speeds, adjust these and see what happens!
+controls.movementSpeed = 20;
+controls.rollSpeed = Math.PI / 12;
+var clock = new THREE.Clock();
+
+
+function render() {
+        var delta = clock.getDelta();
+		controls.update(delta);    
         requestAnimationFrame(render);
         renderer.render(scene, camera);
+		//console.log(camera.position.x);
+		//console.log(heights);
+
+		//if(heights != null) camera.position.set(camera.position.x, heights[(camera.position.x + 256)][(camera.position.z + 256)], camera.position.z);
     }
 
+
+
+render();
 /*
  VR.floor();
 VR.box();
